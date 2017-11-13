@@ -1,0 +1,257 @@
+﻿<html>
+	<head>
+		<title>Конструктор</title>
+		<meta charset="utf-8">		
+		<link rel="stylesheet" href="styles/style.css">	
+	</head>
+	<body>
+		<div id="messageSpace">Нажать "пробел" для редактирования</div>
+		<div id="messageGame"><button  id="lookAround">Завершить редактирование</button></div>
+		<div id="panel">
+			<a href = "http://www.artmarblestudio.ru/"><img src = "styles/logo.png"></a>
+			<div id = "panelPull" >
+				<div id="sizePullText" ></div>
+				<button  id="pullMoreD" >Увеличить бассейн ></button>&nbsp;&nbsp;<button id="pullMiniD" >Уменьшить бассейн < </button>
+			</div>
+			<div id = "panelJetCenter" >
+				<div id="sizeJetCenter" >Группы:</div><button id="jetCenterAdd" >Добавить фонтанную группу</button>
+			</div>		
+		</div>	
+		<canvas id="myCanvas"></canvas>
+        <script>
+		/*---------------------------------------------------------------------------------------;
+        *	SHADERS
+		*	
+		*	DO NOT DELETE!!!!!
+		*
+		*	if take shader from shaderstruy VARS MUST BE CHANGE --->
+		*	vec2 uv = fragCoord.xy / iResolution.xy; ->>>>> vec2 uv = vUv;
+		*	iGlobalTime ->>>> time;
+		*	texture(iChannel1  ->>>> texture2D(tExplosion //// sampler2D(tExplosion;
+		*	fragColor=  ->>>>> gl_FragColor=
+		*---------------------------------------------------------------------------------------;	
+        */		
+        </script>		
+		<script id="vertexShaderPullWater" type="x-shader/x-vertex" >
+			varying vec2 vUv;
+			uniform float time;
+
+			void main() {
+				vUv = uv;
+				gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+			}
+		</script>
+		<script id="fragmentShaderPullWater" type="x-shader/x-vertex"> 
+		/*---------------------------------------------------------------------------------------;		
+		*	License Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
+		*	 Created by S.Guillitte 
+		*----------------------------------------------------------------------------------------;	
+        */			
+		varying vec2 vUv;
+		uniform float time;
+		uniform sampler2D tExplosion;		
+		
+		float hash( in vec2 p )   {
+			return fract(sin(p.x*15.32+p.y*35.78) * 43758.23);
+		}
+		vec2 hash2(vec2 p){
+			return vec2(hash(p*.754),hash(1.5743*p.yx+4.5891))-.5;
+		}
+		vec2 add = vec2(1.0, 0.0);
+		vec2 noise2(vec2 x){
+			vec2 p = floor(x);
+			vec2 f = fract(x);
+			f = f*f*(3.0-2.0*f); 
+			vec2 res = mix(mix( hash2(p),          hash2(p + add.xy),f.x),
+			mix( hash2(p + add.yx), hash2(p + add.xx),f.x),f.y);
+			return res;
+		}
+		vec2 noise2b( in vec2 p )// Simplex Noise from IQ
+		{
+			const float K1 = 0.366025404; // (sqrt(3)-1)/2;
+			const float K2 = 0.211324865; // (3-sqrt(3))/6;
+			p /=2.;
+			vec2 i = floor( p + (p.x+p.y)*K1 );
+	
+			vec2 a = p - i + (i.x+i.y)*K2;
+			vec2 o = (a.x>a.y) ? vec2(1.0,0.0) : vec2(0.0,1.0); //vec2 of = 0.5 + 0.5*vec2(sign(a.x-a.y), sign(a.y-a.x));
+			vec2 b = a - o + K2;
+			vec2 c = a - 1.0 + 2.0*K2;
+
+			vec3 h = max( 0.5-vec3(dot(a,a), dot(b,b), dot(c,c) ), 0.0 );
+
+			vec3 nx = h*h*h*h*vec3( dot(a,hash2(i+0.0)), dot(b,hash2(i+o)), dot(c,hash2(i+1.0)));
+			vec3 ny = h*h*h*h*vec3( dot(a,hash2(i+4.5)), dot(b,hash2(i+o+4.5)), dot(c,hash2(i+1.0+4.5)));
+
+			return vec2(dot( nx, vec3(70.0) ),dot( ny, vec3(70.0) ));  
+		}
+		mat2 m2;
+		vec2 fbm2(vec2 x){
+			vec2 r = vec2(0.0);
+			float a = 1.;
+    
+			for (int i = 0; i < 6; i++)
+			{
+				r += m2*noise2b(x+r)*a; 
+				x +=.3*r+.4;
+			}     
+			return r;
+		}
+		vec2 water(vec2 x)
+		{
+			x=fbm2(x);
+			x=abs(x)/dot(x,x)-1.;
+			return abs(x)/dot(x,x)-1.;
+		}
+		void main() 
+		{	
+			vec2 uv = 2.*vUv;
+			uv*=10.;
+			float t = 1.5*time;
+			float st = sin(t), ct = cos(t);
+			m2 = mat2(ct,st,-st,ct);
+			vec2 p = water(uv+2.*time)+2.;
+			float c = length(p)/7.;
+			c=clamp(pow(c,3.),0.,1.);
+			vec3 col=texture2D(tExplosion,uv/20.+p/45.).rgb;    
+			col=mix(col,vec3(.7,.7,.9),c);
+			gl_FragColor  = vec4(col,0.5);
+		}
+		</script>
+		<script id="vertexShaderJets" type="x-shader/x-vertex" >
+
+		//varying float noise;
+		varying vec2 vUv;
+		uniform float time;
+
+		void main() {
+
+		vUv = uv;
+		// adding some displacement based on the vertex position
+		vec3 offset = vec3(
+			sin(position.x * 5.5 + time*0.5) * 0.05,
+			sin(position.y * 5.5 + time*0.5) * 0.1,
+			sin(position.z * 5.5 + time*0.5) * .05
+		);
+
+		vec3 pos = position + offset;
+
+		// just add some noise to the normal
+		vec3 vNormal = normalMatrix * vec3(normal + normalize(offset) * 80.99);
+
+		vec4 worldPosition = modelMatrix * vec4(pos, 1.0);
+
+		// store the world position as varying for lighting
+		vec3 vWorldPosition = worldPosition.xyz;
+
+		gl_Position = projectionMatrix * viewMatrix * worldPosition;
+		}
+		</script>
+		<script id="fragmentShaderJets" type="x-shader/x-vertex"> 
+		varying vec2 vUv;
+		uniform float time;
+		uniform sampler2D tExplosion;
+
+		vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+		vec2 mod289(vec2 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+		vec3 permute(vec3 x) { return mod289(((x*34.0)+1.0)*x); }
+
+		float snoise(vec2 v) 
+		{
+		const vec4 C = vec4(0.211324865405187,  // (3.0-sqrt(3.0))/6.0
+							0.366025403784439,  // 0.5*(sqrt(3.0)-1.0)
+							-0.577350269189626,  // -1.0 + 2.0 * C.x
+							0.024390243902439); // 1.0 / 41.0
+		vec2 i  = floor(v + dot(v, C.yy) );
+		vec2 x0 = v -   i + dot(i, C.xx);
+		vec2 i1;
+		i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
+		vec4 x12 = x0.xyxy + C.xxzz;
+		x12.xy -= i1;
+		i = mod289(i); // Avoid truncation effects in permutation
+		vec3 p = permute( permute( i.y + vec3(0.0, i1.y, 1.0 ))
+        + i.x + vec3(0.0, i1.x, 1.0 ));
+
+		vec3 m = max(0.5 - vec3(dot(x0,x0), dot(x12.xy,x12.xy), dot(x12.zw,x12.zw)), 0.0);
+		m = m*m ;
+		m = m*m ;
+		vec3 x = 2.0 * fract(p * C.www) - 1.0;
+		vec3 h = abs(x) - 0.5;
+		vec3 ox = floor(x + 0.5);
+		vec3 a0 = x - ox;
+		m *= 0.79284291400159 - 0.25373472095314 * ( a0*a0 + h*h );
+		vec3 g;
+		g.x  = a0.x  * x0.x  + h.x  * x0.y;
+		g.yz = a0.yz * x12.xz + h.yz * x12.yw;
+		return 300.0 * dot(m, g);
+		}
+
+		void main() 
+		{
+		vec2 st = vUv.xy;
+		st.x *= vUv.x/vUv.y;
+		vec3 color = vec3(0.0);
+		vec2 pos = vec2(st*4.0);
+
+		float DF = 0.0;
+
+		// Add a random position
+		float a = 0.0;
+		vec2 vel = vec2(time*.1);
+		DF += snoise(pos+vel)*.25+.25;
+
+		// Add a random position
+		a = snoise(pos*vec2(cos(time*0.015),sin(time*0.01))*0.1)*10.1415;
+		vel = vec2(cos(a),sin(a));
+		DF += snoise(pos+vel)*.25+.65;
+
+		color = vec3( smoothstep(.7,.75,fract(DF)) );
+
+		vec4 txtColor  = texture2D(tExplosion, vUv);
+		vec4 noiceColor =  vec4(1.0-color*0.2,vUv); 
+	
+		gl_FragColor = vec4(noiceColor.x*txtColor.x,noiceColor.y*txtColor.y, noiceColor.z*txtColor.z, 2.5- noiceColor.z*txtColor.z);
+		}
+		</script>
+		<script id="vertexShaderFish" type="x-shader/x-vertex" >
+		/*---------------------------------------------------------------------------------------;		
+		*	My easy shader. Free to use ))) 
+		*----------------------------------------------------------------------------------------;	
+        */	
+		varying vec2 vUv;
+		uniform float time;
+
+		void main() {
+
+		vUv = uv;
+
+		vec3 offset = vec3(
+			sin(position.x * 5.5 + time*0.5) * 1.2,
+			sin(position.y * 5.5 + time*0.5) * .1,
+			sin(position.z * 5.5 + time*0.5) * 1.2
+		);
+
+		vec3 pos = position + offset;
+		vec3 vNormal = normalMatrix * vec3(normal + normalize(offset) * 10.99);
+		vec4 worldPosition = modelMatrix * vec4(pos, 1.0);
+		vec3 vWorldPosition = worldPosition.xyz;
+		gl_Position = projectionMatrix * viewMatrix * worldPosition;
+		}
+		</script>
+		<script id="fragmentShaderFish" type="x-shader/x-vertex"> 
+		varying vec2 vUv;
+		uniform float time;
+		uniform sampler2D tExplosion;
+
+		void main() 
+		{	
+		vec4 txtColor  = texture2D(tExplosion, vUv);	 
+		gl_FragColor = vec4(txtColor.x,txtColor.y,txtColor.z, txtColor.x*0.6);
+		}
+		</script>
+		<script src="js/three.js"></script>
+		<script src="js/FirstPersonControls.js"></script>	
+		<script src="js/fishes.js"></script>	   
+		<script src="js/app.js"></script>	
+	</body>
+</html>
