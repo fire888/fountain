@@ -20,7 +20,7 @@
 		<canvas id="myCanvas"></canvas>
         <script>
 		/*---------------------------------------------------------------------------------------;
-        *	SHADERS
+		*	SHADERS
 		*	
 		*	DO NOT DELETE!!!!!
 		*
@@ -30,7 +30,7 @@
 		*	texture(iChannel1  ->>>> texture2D(tExplosion //// sampler2D(tExplosion;
 		*	fragColor=  ->>>>> gl_FragColor=
 		*---------------------------------------------------------------------------------------;	
-        */		
+		*/		
         </script>		
 		<script id="vertexShaderPullWater" type="x-shader/x-vertex" >
 			varying vec2 vUv;
@@ -46,7 +46,7 @@
 		*	License Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
 		*	 Created by S.Guillitte 
 		*----------------------------------------------------------------------------------------;	
-        */			
+		*/			
 		varying vec2 vUv;
 		uniform float time;
 		uniform sampler2D tExplosion;		
@@ -170,7 +170,7 @@
 		x12.xy -= i1;
 		i = mod289(i); // Avoid truncation effects in permutation
 		vec3 p = permute( permute( i.y + vec3(0.0, i1.y, 1.0 ))
-        + i.x + vec3(0.0, i1.x, 1.0 ));
+		+ i.x + vec3(0.0, i1.x, 1.0 ));
 
 		vec3 m = max(0.5 - vec3(dot(x0,x0), dot(x12.xy,x12.xy), dot(x12.zw,x12.zw)), 0.0);
 		m = m*m ;
@@ -217,7 +217,7 @@
 		/*---------------------------------------------------------------------------------------;		
 		*	My easy shader. Free to use ))) 
 		*----------------------------------------------------------------------------------------;	
-        */	
+		*/	
 		varying vec2 vUv;
 		uniform float time;
 

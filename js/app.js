@@ -161,7 +161,7 @@ function ConstructorGroup(){
 }	 	 
 	 
 //------------------------------------------//	
-//------ Constructor Rounds Jet--------------//
+//------ Constructor Rounds Jet-------------//
 //------------------------------------------//	 
 
 function RoundJetConstructor(pX, pZ){
