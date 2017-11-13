@@ -1,71 +1,70 @@
-    	body{
-    		margin: 0;
-    		overflow: hidden;
+		body{
+			margin: 0;
+			overflow: hidden;
 			background-color: "red";
 		}
 	
-	    #panel {
-           padding: 20px;	 
-	       position: absolute;
-           border-style: solid;
-           border-width: 1px;
-           border-color:  #86ada8; 
-           border-radius: 15px; 
-		   margin-top: 10px; 		   
+		#panel {
+			padding: 20px;	 
+			position: absolute;
+			border-style: solid;
+			border-width: 1px;
+			border-color:  #86ada8; 
+			border-radius: 15px; 
+			margin-top: 10px; 		   
 		}
 		
-        #messageGame, #messageSpace{	
-	       font-size:30px;
-           color: white; 	 
-           background: rgba(0,0,0,0.3);	
-           z-index:3000;	
-           margin: 0;
-           padding: 20px;	 
-	       position: absolute;
-           border-style: solid;
-           border-width: 1px;
-           border-color:  #86ada8; 
-           border-radius: 15px; 
-		   margin-top: 100px; 
+		#messageGame, #messageSpace{	
+			font-size:30px;
+			color: white; 	 
+			background: rgba(0,0,0,0.3);	
+			z-index:3000;	
+			margin: 0;
+			padding: 20px;	 
+			position: absolute;
+			border-style: solid;
+			border-width: 1px;
+			border-color:  #86ada8; 
+			border-radius: 15px; 
+			margin-top: 100px; 
 		}	
 
-        #panelPull, #panelJetCenter, #panelJetRound{	
-	       font-size:20px;		  
-		   float: left;
-           color: white; 	 
-           background: rgba(0,0,0,0.4);	
-           z-index:3000;	
-           margin: 0;
-           padding: 20px;	 
-           border-style: solid;
-           border-width: 1px;
-           border-color:  #86ada8; 
-           border-radius: 15px; 
+		#panelPull, #panelJetCenter, #panelJetRound{	
+			font-size:20px;		  
+			float: left;
+			color: white; 	 
+			background: rgba(0,0,0,0.4);	
+			z-index:3000;	
+			margin: 0;
+			padding: 20px;	 
+			border-style: solid;
+			border-width: 1px;
+			border-color:  #86ada8; 
+			border-radius: 15px; 
 		}
 	
 		
-        button{
-          width: 195px;
-          height: 30px;
-		  text-align:left;
-   
+		button{
+			width: 195px;
+			height: 30px;
+			text-align:left; 
 		}
 
-        #debug
-        {
-	       font-size:10px;
-           color: white; 	 
-           background: rgba(0,0,0,0.9);	
-           z-index:3000;	
-           margin: 0;
-           padding: 20px;	 
-	       position: absolute;
-           border-style: solid;
-           border-width: 1px;
-           border-color:  #86ada8; 
-           border-radius: 15px; 
+		#debug
+		{
+			font-size:10px;
+			color: white; 	 
+			background: rgba(0,0,0,0.9);	
+			z-index:3000;	
+			margin: 0;
+			padding: 20px;	 
+			position: absolute;
+			border-style: solid;
+			border-width: 1px;
+			border-color:  #86ada8; 
+			border-radius: 15px; 
 		} 
 
-        img {
-           float:left;
+		img {
+			float:left;
 		} 	
