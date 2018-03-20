@@ -1,4 +1,4 @@
-# fountain
+# Fountain
 
 Online browser Constructor water jets on *threejs*.  
   
